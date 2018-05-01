@@ -1,5 +1,8 @@
 README
 DevUp Data Science Program | Citi Bike Capstone Project
+
+(NOTE: For some reason, graphs made in Folium and Plotly cannot render when opening from a new ipynb! I also tried uploading to Github, downloading as HTML, but nothing displays, besides running the code locally. These graphs are the most useful as they are interactive (ie. Can zoom in and out of the street map, see the location of each station, size of the bubble charts) but unfortunately, cannot be displayed once a new file has been opened. Please refer to the graphs in the slide deck for confirmation that they do indeed plot (and are useful too!) )
+
 Packages Used:
 -	Geopy
 -	Pandas
@@ -10,7 +13,6 @@ Packages Used:
 -	Folium
 -	Sklearn 
 -	XGBoost
-
 1. Understand and Preprocessing Ridership Data
 Part. 1
 -	Note: All histograms and boxplots in Part. 1 use matplotlib.pyplot
@@ -57,6 +59,7 @@ Assumption: All riders bike no faster than 30 mph.
 2. Ridership Data Visualization 
 
 Note: Questions appear in the order they are coded in in the Jupyter notebook
+
 Question 1. Top 5 stations with the most starts (showing # of starts)
 -	Use Folium to create a map of the top five start stations indicated by markers.
 -	First, obtain the names of the top five most visited start stations and their counts as a Panda Series and the corresponding dataset (containing five rows of data).
@@ -69,7 +72,7 @@ Question 1. Top 5 stations with the most starts (showing # of starts)
 -	Include the total counts for the top five start stations
 
 
-Question 3.
+Question 3. Most popular trips based on start station and stop station
 -	Use Folium to create a map of the top five trips indicated by trip routes between station markers.
 -	Create a new feature “start_end” by concatenating the string elements of start and end station names with a hyphen in between Ie. “e 7 st & avenue a-cooper square & e 7 st”
 -	Count the top five trips
@@ -79,7 +82,7 @@ Question 3.
 -	Create a function which takes in both a list start/end coordinate pairs and a list of single coordinates and returns a map with the top five trips and their start/end stations
 
 
-Question 5.
+Question 5. What is the busiest bike in NYC in 2017? How many times was it used? How many minutes was it in use?
 -	Use a Pandas dataframe to count the number of occurrences for each bike ID, meaning the number of times the bike started or stopped at a station. Take the largest count as the busiest bike in NYC.
 -	Use the number of occurrences to locate this bike’s corresponding ID
 -	Calculate the total number of minutes used by summing all “trip duration (min)” values for this bike
@@ -108,6 +111,10 @@ Model 1: Linear Regression
 -	Let's bring in an NYC weather dataset and then work on a different model.
 
 
+
+
+
+
 Clean and Merge Weather Data
 -	Obtained from https://www.ncdc.noaa.gov/cdo-web/datasets
 -	Clean the data in Excel as preprocessing is fairly simple. No need to remove rows as there are exactly 365 datapoints, one for year day of 2017. Drop features Name, Latitude, Longitude, Elevation and Station.
@@ -119,12 +126,8 @@ Model 2: XGBoost
 -	More efficient, robust and include better parameters for tuning the model
 -	Prepare the training, validation and testing by converting non integer elements in the dataframe to integers using LabelEncoder. Ensure all dataset elements are either int or floats before modeling.
 -	60:20:20 train, validate, test sets
--	Use log(y) instead of y for better RSME error prediction
--	Two validation scatter plot for confirmation
--	Y_pred vs y_actual scatter plot shows a good model for short trip times
--	Built function to output start, destination, trip distance, and predicted trip duration
-
-
-
-
-
+-	Use log(y) instead of y for better RSLME error prediction
+-	Two validation scatter plots for confirmation of good prediction
+-	Y_pred vs y_actual scatter plot shows a good model for short trip times (longer trip times could still use tweaking in the model)
+-	Build function to calculate travel time. Takes a start station name and end station name and locates corresponding coordinates. Then, calculates the distance between the two coordinate points and multiplies it by a factor of 1.25 just like in the previous distance calculation. Locates the first row of datapoints with the same trip distance from the model's full features dataset (X_data) and uses this singular datapoint to predict the trip time. In other words, plug in this datapoint into the XGBoost model to predict trip time. This function returns: start station | end station | trip distance | predicted travel time
+-	Predicted travel time tested on three different trips
